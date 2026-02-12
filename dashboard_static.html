@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semiconductor Capacity Management — Executive Dashboard</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Inter,-apple-system,sans-serif;background:#F4F6F9;color:#1A1D23}
+
+  /* ── Top bar ── */
+  .topbar{background:#fff;border-bottom:1px solid #E1E5EA;height:56px;display:flex;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.06);position:sticky;top:0;z-index:100}
+  .topbar-inner{max-width:1440px;margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;align-items:center;width:100%}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand-icon{font-size:22px;color:#1B6EC2}
+  .brand-title{font-size:18px;font-weight:700;color:#1A1D23}
+  .brand-sub{font-size:11px;color:#6C757D;margin-top:2px}
+  .live-badge{font-size:11px;font-weight:700;color:#198754;background:#D1F0E0;padding:4px 12px;border-radius:20px;letter-spacing:.5px}
+  .data-label{font-size:11px;color:#6C757D;margin-left:16px}
+
+  /* ── KPI strip ── */
+  .kpi-strip{padding:18px 0;background:#F4F6F9}
+  .kpi-grid{max-width:1440px;margin:0 auto;padding:0 32px;display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+  .kpi-card{background:#fff;border:1px solid #E1E5EA;border-radius:6px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .kpi-label{font-size:10px;font-weight:700;color:#6C757D;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+  .kpi-value{font-size:28px;font-weight:800;color:#1A1D23;display:flex;align-items:baseline;gap:8px}
+  .kpi-badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px}
+  .kpi-sub{font-size:11px;color:#6C757D;margin-top:4px}
+
+  /* ── Tabs ── */
+  .tabs-bar{background:#fff;border-bottom:1px solid #E1E5EA;border-top:1px solid #E1E5EA}
+  .tabs-inner{max-width:1440px;margin:0 auto;padding:0 24px;display:flex}
+  .tab-btn{padding:14px 22px;font-size:12px;font-weight:600;letter-spacing:.3px;border:none;border-bottom:3px solid transparent;background:transparent;color:#6C757D;cursor:pointer;transition:.15s}
+  .tab-btn:hover{color:#1A1D23}
+  .tab-btn.active{border-bottom:3px solid #1B6EC2;color:#1B6EC2}
+
+  /* ── Content ── */
+  .content{max-width:1440px;margin:0 auto;padding:24px 32px}
+  .tab-page{display:none}
+  .tab-page.active{display:block}
+
+  /* ── Cards ── */
+  .card{background:#fff;border:1px solid #E1E5EA;border-radius:6px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:16px}
+  .card-title{font-size:11px;font-weight:700;color:#6C757D;text-transform:uppercase;letter-spacing:.7px;padding-bottom:10px;margin-bottom:4px;border-bottom:2px solid #1B6EC2}
+
+  /* ── Grid helpers ── */
+  .grid-2{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .grid-2eq{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-31{display:grid;grid-template-columns:3fr 1fr;gap:16px}
+
+  /* ── Risk table ── */
+  .risk-table{width:100%;border-collapse:collapse}
+  .risk-table th{text-align:left;padding:9px 12px;font-size:11px;font-weight:700;color:#6C757D;text-transform:uppercase;border-bottom:2px solid #E1E5EA}
+  .risk-table th:last-child{text-align:right}
+  .risk-table td{padding:8px 12px;font-size:12px;border-bottom:1px solid #E1E5EA}
+  .risk-table td:last-child{text-align:right;font-weight:700}
+  .val-blue{color:#1B6EC2}.val-green{color:#198754}.val-amber{color:#D4860B}.val-red{color:#C0392B}
+
+  /* ── Inline legend ── */
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:#6C757D}
+  .leg-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px}
+
+  /* ── Footer ── */
+  footer{text-align:center;padding:16px;font-size:10px;color:#6C757D;border-top:1px solid #E1E5EA;background:#fff;margin-top:32px}
+
+  @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.grid-2,.grid-3,.grid-2eq,.grid-31{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-icon">▣</div>
+      <div>
+        <div class="brand-title">Semiconductor Capacity Management</div>
+        <div class="brand-sub">Executive Analytics Dashboard &nbsp;·&nbsp; Fab Operations &amp; Infrastructure Readiness</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center">
+      <span class="live-badge">● LIVE</span>
+      <span class="data-label">Data: Jun 2024</span>
+    </div>
+  </div>
+</div>
+
+<!-- KPI strip -->
+<div class="kpi-strip">
+  <div class="kpi-grid">
+    <div class="kpi-card" style="border-left:4px solid #1B6EC2">
+      <div class="kpi-label">Fleet OEE</div>
+      <div class="kpi-value">83.3%<span class="kpi-badge" style="color:#198754;background:#D1F0E0">▲ 2.3%</span></div>
+      <div class="kpi-sub">Overall Equipment Effectiveness</div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #198754">
+      <div class="kpi-label">Daily Output</div>
+      <div class="kpi-value">231,759<span class="kpi-badge" style="color:#198754;background:#D1F0E0">▲ 5.7%</span></div>
+      <div class="kpi-sub">Wafers Per Day</div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #117A8B">
+      <div class="kpi-label">Utilization</div>
+      <div class="kpi-value">51.0%<span class="kpi-badge" style="color:#C0392B;background:#FDECEA">▼ 1.2%</span></div>
+      <div class="kpi-sub">Average Tool Utilization</div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #7952B3">
+      <div class="kpi-label">Active Tools</div>
+      <div class="kpi-value">193</div>
+      <div class="kpi-sub">Equipment Assets</div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #D4860B">
+      <div class="kpi-label">CapEx Portfolio</div>
+      <div class="kpi-value">$3.54B</div>
+      <div class="kpi-sub">Total Investment</div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #C0392B">
+      <div class="kpi-label">Portfolio NPV</div>
+      <div class="kpi-value">$0.31B<span class="kpi-badge" style="color:#198754;background:#D1F0E0">▲ 8.5%</span></div>
+      <div class="kpi-sub">Avg IRR 22.5%</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs-bar">
+  <div class="tabs-inner">
+    <button class="tab-btn active" onclick="showTab('exec',this)">Executive Summary</button>
+    <button class="tab-btn" onclick="showTab('ops',this)">Operations</button>
+    <button class="tab-btn" onclick="showTab('cap',this)">Capacity Planning</button>
+    <button class="tab-btn" onclick="showTab('capex',this)">CapEx Portfolio</button>
+    <button class="tab-btn" onclick="showTab('risk',this)">Risk &amp; Analytics</button>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+  <!-- EXECUTIVE SUMMARY -->
+  <div id="tab-exec" class="tab-page active">
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">Fleet OEE Trend — 18-Month Performance</div>
+        <div id="chart-oee-exec" style="height:300px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Quarterly Demand Forecast</div>
+        <div id="chart-demand-exec" style="height:300px"></div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">Bottleneck Analysis — Theory of Constraints</div>
+        <div id="chart-bottleneck-exec" style="height:300px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Scenario Analysis — Demand vs Capacity</div>
+        <div id="chart-scenario-exec" style="height:300px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Daily Output by Tool Category</div>
+        <div id="chart-output-exec" style="height:300px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPERATIONS -->
+  <div id="tab-ops" class="tab-page">
+    <div class="card">
+      <div class="card-title">OEE Components — Daily Fleet Average</div>
+      <div id="chart-oee-ops" style="height:340px"></div>
+    </div>
+    <div class="grid-2eq" style="margin-top:16px">
+      <div class="card">
+        <div class="card-title">Tool Utilization by Type</div>
+        <div id="chart-util-ops" style="height:320px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Daily Output by Category</div>
+        <div id="chart-output-ops" style="height:320px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAPACITY PLANNING -->
+  <div id="tab-cap" class="tab-page">
+    <div class="grid-31" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">Bottleneck Analysis — Utilization at 18K WPW Target</div>
+        <div id="chart-bottleneck-cap" style="height:320px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Capacity Gap by Scenario</div>
+        <div id="chart-scenario-cap" style="height:320px"></div>
+      </div>
+    </div>
+    <div class="grid-2eq">
+      <div class="card">
+        <div class="card-title">Quarterly Demand Forecast (Total Volume)</div>
+        <div id="chart-demand-cap" style="height:280px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Scenario Analysis — Demand vs Effective Capacity</div>
+        <div id="chart-scen-grouped" style="height:280px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAPEX PORTFOLIO -->
+  <div id="tab-capex" class="tab-page">
+    <div class="card">
+      <div class="card-title">CapEx Project Portfolio — Investment &amp; NPV Overview</div>
+      <div id="chart-capex-bar" style="height:320px"></div>
+    </div>
+    <div class="grid-2eq" style="margin-top:16px">
+      <div class="card">
+        <div class="card-title">NPV vs Investment (Bubble Size = IRR)</div>
+        <div id="chart-npv-scatter" style="height:340px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Project IRR vs Hurdle Rate (15%)</div>
+        <div id="chart-irr" style="height:340px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISK & ANALYTICS -->
+  <div id="tab-risk" class="tab-page">
+    <div class="grid-31" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">Monte Carlo Capacity Risk — 10,000 Simulation Iterations</div>
+        <div id="chart-mc" style="height:320px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Risk Metrics Summary</div>
+        <table class="risk-table">
+          <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Baseline Capacity</td><td class="val-blue">1,621,313 WPW</td></tr>
+            <tr><td>Mean Weekly Demand</td><td>8,555 WPW</td></tr>
+            <tr><td>Mean Shortfall</td><td>0 WPW</td></tr>
+            <tr><td>P95 Shortfall</td><td class="val-amber">0 WPW</td></tr>
+            <tr><td>P99 Shortfall</td><td class="val-red">0 WPW</td></tr>
+            <tr><td>Service Level</td><td class="val-green">100.0%</td></tr>
+            <tr><td>Shortfall Probability</td><td class="val-green">0.0%</td></tr>
+            <tr><td>Mean Utilization</td><td class="val-blue">0.6%</td></tr>
+            <tr><td>P95 Utilization</td><td class="val-amber">0.8%</td></tr>
+            <tr><td>Simulations Run</td><td>10,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="grid-2eq">
+      <div class="card">
+        <div class="card-title">Additional Capacity Needed by Scenario</div>
+        <div id="chart-risk-scenario" style="height:280px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">MTBF Performance vs Theoretical</div>
+        <div id="chart-mtbf" style="height:280px"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<footer>Semiconductor Capacity Management System &nbsp;·&nbsp; Advanced Analytics Platform &nbsp;·&nbsp; All data synthetic for demonstration purposes</footer>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+const BOTTLENECK=[{"tool_type":"Metrology_SEM","utilization_at_target":0.8929},{"tool_type":"Etch_Plasma","utilization_at_target":0.6434},{"tool_type":"Metrology_Optical","utilization_at_target":0.2576},{"tool_type":"Deposition_CVD","utilization_at_target":0.2521},{"tool_type":"Ion_Implant","utilization_at_target":0.2363},{"tool_type":"Lithography_EUV","utilization_at_target":0.1993},{"tool_type":"CMP","utilization_at_target":0.1585},{"tool_type":"Deposition_PVD","utilization_at_target":0.1401},{"tool_type":"Lithography_DUV","utilization_at_target":0.1334},{"tool_type":"Wet_Process","utilization_at_target":0.1263}];
+const SCENARIOS=[{"scenario":"Conservative","projected_demand_wpw":16496,"effective_capacity_wpw":1427635,"additional_capacity_needed_pct":0},{"scenario":"Base Case","projected_demand_wpw":17596,"effective_capacity_wpw":1476305,"additional_capacity_needed_pct":0},{"scenario":"Aggressive","projected_demand_wpw":19167,"effective_capacity_wpw":1508751,"additional_capacity_needed_pct":0},{"scenario":"Stretch","projected_demand_wpw":21209,"effective_capacity_wpw":1541197,"additional_capacity_needed_pct":0}];
+const CAPEX_DATA=[{"project_name":"EUV_Litho_Expansion_Phase1","investment_usd":650000000,"npv_usd":55920728,"irr_percent":22.31,"status":"In Progress","progress_percent":87},{"project_name":"Advanced_Packaging_Line","investment_usd":380000000,"npv_usd":-29473845,"irr_percent":18.95,"status":"In Progress","progress_percent":52},{"project_name":"Cleanroom_Bay_Expansion","investment_usd":220000000,"npv_usd":-35000085,"irr_percent":17.27,"status":"In Progress","progress_percent":48},{"project_name":"EUV_Litho_Expansion_Phase2","investment_usd":850000000,"npv_usd":99341669,"irr_percent":22.94,"status":"In Progress","progress_percent":30},{"project_name":"AI_Accelerator_Dedicated_Line","investment_usd":520000000,"npv_usd":54473420,"irr_percent":22.69,"status":"In Progress","progress_percent":2},{"project_name":"Automotive_Qualification","investment_usd":340000000,"npv_usd":88420856,"irr_percent":25.88,"status":"Planning","progress_percent":1},{"project_name":"Next_Gen_Metrology_Suite","investment_usd":125000000,"npv_usd":45394659,"irr_percent":28.0,"status":"Planning","progress_percent":5},{"project_name":"High_NA_EUV_Tools","investment_usd":450000000,"npv_usd":27105044,"irr_percent":21.78,"status":"Planning","progress_percent":10}];
+const OUTPUT_CAT=[{"tool_category":"Lithography","output_wafers":61994},{"tool_category":"Deposition","output_wafers":46462},{"tool_category":"Wet","output_wafers":40771},{"tool_category":"Metrology","output_wafers":35914},{"tool_category":"CMP","output_wafers":22742},{"tool_category":"Etch","output_wafers":14625},{"tool_category":"Ion","output_wafers":9251}];
+const UTIL_TYPE=[{"tool_type":"Wet_Process","utilization_rate":0.5585},{"tool_type":"Lithography_DUV","utilization_rate":0.5338},{"tool_type":"CMP","utilization_rate":0.5402},{"tool_type":"Deposition_PVD","utilization_rate":0.5285},{"tool_type":"Deposition_CVD","utilization_rate":0.5188},{"tool_type":"Metrology_Optical","utilization_rate":0.5019},{"tool_type":"Etch_Plasma","utilization_rate":0.5017},{"tool_type":"Ion_Implant","utilization_rate":0.4948},{"tool_type":"Lithography_EUV","utilization_rate":0.4771},{"tool_type":"Metrology_SEM","utilization_rate":0.4608}];
+const OEE_TREND=[{"date":"2024-05-02","oee":0.8294,"availability":0.9059},{"date":"2024-05-05","oee":0.8302,"availability":0.9054},{"date":"2024-05-08","oee":0.825,"availability":0.9028},{"date":"2024-05-11","oee":0.8254,"availability":0.9029},{"date":"2024-05-14","oee":0.8273,"availability":0.9047},{"date":"2024-05-17","oee":0.8285,"availability":0.9071},{"date":"2024-05-20","oee":0.8298,"availability":0.907},{"date":"2024-05-23","oee":0.8184,"availability":0.8978},{"date":"2024-05-26","oee":0.826,"availability":0.9028},{"date":"2024-05-29","oee":0.8287,"availability":0.9072},{"date":"2024-06-01","oee":0.8279,"availability":0.9038},{"date":"2024-06-04","oee":0.8298,"availability":0.9068},{"date":"2024-06-07","oee":0.8286,"availability":0.9087},{"date":"2024-06-10","oee":0.829,"availability":0.9072},{"date":"2024-06-13","oee":0.8302,"availability":0.9087},{"date":"2024-06-16","oee":0.83,"availability":0.9067},{"date":"2024-06-19","oee":0.8275,"availability":0.9044},{"date":"2024-06-22","oee":0.8256,"availability":0.9042},{"date":"2024-06-25","oee":0.8322,"availability":0.9066},{"date":"2024-06-28","oee":0.8268,"availability":0.9073},{"date":"2024-06-30","oee":0.8326,"availability":0.9081}];
+const DEMAND=[{"quarter":"2023-03-31","demand_wafers":102293},{"quarter":"2023-06-30","demand_wafers":81204},{"quarter":"2023-09-30","demand_wafers":74699},{"quarter":"2023-12-31","demand_wafers":100708},{"quarter":"2024-03-31","demand_wafers":116793},{"quarter":"2024-06-30","demand_wafers":111220},{"quarter":"2024-09-30","demand_wafers":99555},{"quarter":"2024-12-31","demand_wafers":118941},{"quarter":"2025-03-31","demand_wafers":136039},{"quarter":"2025-06-30","demand_wafers":121963},{"quarter":"2025-09-30","demand_wafers":118688},{"quarter":"2025-12-31","demand_wafers":126344},{"quarter":"2026-03-31","demand_wafers":157272},{"quarter":"2026-06-30","demand_wafers":150193},{"quarter":"2026-09-30","demand_wafers":138469},{"quarter":"2026-12-31","demand_wafers":179713},{"quarter":"2027-03-31","demand_wafers":172499},{"quarter":"2027-06-30","demand_wafers":177140},{"quarter":"2027-09-30","demand_wafers":172930},{"quarter":"2027-12-31","demand_wafers":204237}];
+const MTBF_DATA=[{"tool_type":"Metrology_SEM","mtbf_performance":68},{"tool_type":"Lithography_EUV","mtbf_performance":74},{"tool_type":"Etch_Plasma","mtbf_performance":82},{"tool_type":"Deposition_CVD","mtbf_performance":88},{"tool_type":"Ion_Implant","mtbf_performance":91},{"tool_type":"CMP","mtbf_performance":93},{"tool_type":"Lithography_DUV","mtbf_performance":95},{"tool_type":"Wet_Process","mtbf_performance":97},{"tool_type":"Deposition_PVD","mtbf_performance":98},{"tool_type":"Metrology_Optical","mtbf_performance":99}];
+
+// ── Palette ───────────────────────────────────────────────────────────────────
+const P=['#1B6EC2','#117A8B','#198754','#D4860B','#7952B3','#C0392B'];
+const CFG={displayModeBar:true,modeBarButtonsToRemove:['lasso2d','select2d','autoScale2d'],displaylogo:false,responsive:true};
+const BASE_LAYOUT={
+  paper_bgcolor:'#fff',plot_bgcolor:'#fff',
+  font:{family:'"Segoe UI",Inter,sans-serif',size:11,color:'#1A1D23'},
+  hoverlabel:{bgcolor:'#1A1D23',font:{color:'#fff',size:11}},
+  xaxis:{showgrid:true,gridcolor:'#EAECEF',zeroline:false},
+  yaxis:{showgrid:true,gridcolor:'#EAECEF',zeroline:false},
+  margin:{l:48,r:20,t:28,b:40},
+};
+function L(extra){return Object.assign({},BASE_LAYOUT,extra);}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function barColor(val,thresh1,thresh2){return val>=thresh1?'#C0392B':val>=thresh2?'#D4860B':'#198754';}
+
+// ── OEE trend ─────────────────────────────────────────────────────────────────
+function drawOEE(divId,height){
+  const dates=OEE_TREND.map(d=>d.date);
+  const oee  =OEE_TREND.map(d=>+(d.oee*100).toFixed(2));
+  const avail=OEE_TREND.map(d=>+(d.availability*100).toFixed(2));
+  Plotly.newPlot(divId,[
+    {x:dates,y:oee,  name:'OEE',         mode:'lines',line:{color:P[0],width:2.5}},
+    {x:dates,y:avail,name:'Availability',mode:'lines',line:{color:P[1],width:1.5,dash:'dot'}},
+  ],L({height,hovermode:'x unified',
+      yaxis:{...BASE_LAYOUT.yaxis,ticksuffix:'%',range:[70,100]},
+      legend:{orientation:'h',x:0,y:1.12,font:{size:10}}}),CFG);
+}
+drawOEE('chart-oee-exec',300);
+drawOEE('chart-oee-ops',340);
+
+// ── Demand forecast ───────────────────────────────────────────────────────────
+function drawDemand(divId,height){
+  Plotly.newPlot(divId,[{
+    x:DEMAND.map(d=>d.quarter),y:DEMAND.map(d=>d.demand_wafers),
+    mode:'lines+markers',
+    line:{color:P[0],width:2.5},
+    marker:{size:5,color:P[0]},
+    fill:'tozeroy',fillcolor:'rgba(27,110,194,0.08)',
+    name:'Total Demand'
+  }],L({height,showlegend:false,
+        yaxis:{...BASE_LAYOUT.yaxis,title:'Wafers / Quarter'}}),CFG);
+}
+drawDemand('chart-demand-exec',300);
+drawDemand('chart-demand-cap',280);
+
+// ── Bottleneck ────────────────────────────────────────────────────────────────
+function drawBottleneck(divId,height){
+  const sorted=[...BOTTLENECK].sort((a,b)=>a.utilization_at_target-b.utilization_at_target);
+  Plotly.newPlot(divId,[{
+    x:sorted.map(d=>+(d.utilization_at_target*100).toFixed(1)),
+    y:sorted.map(d=>d.tool_type),
+    type:'bar',orientation:'h',
+    marker:{color:sorted.map(d=>barColor(d.utilization_at_target,0.9,0.8))},
+    text:sorted.map(d=>(d.utilization_at_target*100).toFixed(1)+'%'),
+    textposition:'outside'
+  }],L({height,showlegend:false,
+        margin:{l:140,r:60,t:28,b:40},
+        shapes:[{type:'line',x0:90,x1:90,y0:-0.5,y1:sorted.length-0.5,
+                 line:{color:'#C0392B',dash:'dash',width:1.5}}],
+        annotations:[{x:90,y:sorted.length-0.5,text:'⚠ 90% Threshold',
+                       showarrow:false,xanchor:'left',font:{size:9,color:'#C0392B'},yanchor:'bottom'}],
+        xaxis:{...BASE_LAYOUT.xaxis,ticksuffix:'%',range:[0,115]},
+        yaxis:{...BASE_LAYOUT.yaxis,showgrid:false}}),CFG);
+}
+drawBottleneck('chart-bottleneck-exec',300);
+drawBottleneck('chart-bottleneck-cap',320);
+
+// ── Scenario grouped bar ──────────────────────────────────────────────────────
+function drawScenarioGrouped(divId,height){
+  Plotly.newPlot(divId,[
+    {name:'Projected Demand',  x:SCENARIOS.map(s=>s.scenario),y:SCENARIOS.map(s=>s.projected_demand_wpw),  type:'bar',marker:{color:P[0]},text:SCENARIOS.map(s=>s.projected_demand_wpw.toLocaleString()),textposition:'outside',textfont:{size:9}},
+    {name:'Effective Capacity',x:SCENARIOS.map(s=>s.scenario),y:SCENARIOS.map(s=>s.effective_capacity_wpw),type:'bar',marker:{color:P[1]},text:SCENARIOS.map(s=>s.effective_capacity_wpw.toLocaleString()),textposition:'outside',textfont:{size:9}},
+  ],L({height,barmode:'group',
+        legend:{orientation:'h',x:0,y:1.12,font:{size:10}},
+        yaxis:{...BASE_LAYOUT.yaxis,title:'WPW'}}),CFG);
+}
+drawScenarioGrouped('chart-scenario-exec',300);
+drawScenarioGrouped('chart-scen-grouped',280);
+
+// ── Scenario gap bar ──────────────────────────────────────────────────────────
+function drawScenarioCap(divId,height){
+  Plotly.newPlot(divId,[{
+    x:SCENARIOS.map(s=>s.scenario),
+    y:SCENARIOS.map(s=>s.additional_capacity_needed_pct),
+    type:'bar',
+    marker:{color:SCENARIOS.map(s=>barColor(s.additional_capacity_needed_pct,10,1))},
+    text:SCENARIOS.map(s=>s.additional_capacity_needed_pct+'%'),
+    textposition:'outside'
+  }],L({height,showlegend:false,
+        yaxis:{...BASE_LAYOUT.yaxis,title:'Additional Capacity Needed (%)'}}),CFG);
+}
+drawScenarioCap('chart-scenario-cap',320);
+drawScenarioCap('chart-risk-scenario',280);
+
+// ── Output by category ────────────────────────────────────────────────────────
+function drawOutputCat(divId,height){
+  const s=[...OUTPUT_CAT].sort((a,b)=>b.output_wafers-a.output_wafers);
+  Plotly.newPlot(divId,[{
+    x:s.map(d=>d.tool_category),y:s.map(d=>d.output_wafers),
+    type:'bar',
+    marker:{color:P.slice(0,s.length)},
+    text:s.map(d=>d.output_wafers.toLocaleString()),
+    textposition:'outside',textfont:{size:10}
+  }],L({height,showlegend:false,
+        yaxis:{...BASE_LAYOUT.yaxis,title:'Wafers / Day'}}),CFG);
+}
+drawOutputCat('chart-output-exec',300);
+drawOutputCat('chart-output-ops',320);
+
+// ── Utilization by type ───────────────────────────────────────────────────────
+(function(){
+  const s=[...UTIL_TYPE].sort((a,b)=>a.utilization_rate-b.utilization_rate);
+  Plotly.newPlot('chart-util-ops',[{
+    x:s.map(d=>+(d.utilization_rate*100).toFixed(1)),
+    y:s.map(d=>d.tool_type),
+    type:'bar',orientation:'h',
+    marker:{color:P[0]},
+    text:s.map(d=>(d.utilization_rate*100).toFixed(1)+'%'),
+    textposition:'outside'
+  }],L({height:320,showlegend:false,
+        margin:{l:140,r:60,t:28,b:40},
+        xaxis:{...BASE_LAYOUT.xaxis,ticksuffix:'%'},
+        yaxis:{...BASE_LAYOUT.yaxis,showgrid:false}}),CFG);
+})();
+
+// ── CapEx investment bar ──────────────────────────────────────────────────────
+(function(){
+  const s=[...CAPEX_DATA].sort((a,b)=>b.investment_usd-a.investment_usd);
+  Plotly.newPlot('chart-capex-bar',[
+    {name:'Investment ($M)',x:s.map(d=>d.project_name),y:s.map(d=>+(d.investment_usd/1e6).toFixed(0)),
+     type:'bar',marker:{color:P[0]},
+     text:s.map(d=>'$'+(d.investment_usd/1e6).toFixed(0)+'M'),textposition:'outside',textfont:{size:10}},
+    {name:'NPV ($M)',x:s.map(d=>d.project_name),y:s.map(d=>+(d.npv_usd/1e6).toFixed(0)),
+     type:'bar',marker:{color:s.map(d=>d.npv_usd>=0?P[2]:P[5])},
+     text:s.map(d=>'$'+(d.npv_usd/1e6).toFixed(0)+'M'),textposition:'outside',textfont:{size:9}},
+  ],L({height:320,barmode:'group',
+        xaxis:{...BASE_LAYOUT.xaxis,tickangle:-20,showgrid:false},
+        yaxis:{...BASE_LAYOUT.yaxis,title:'$M'},
+        legend:{orientation:'h',x:0,y:1.12,font:{size:10}}}),CFG);
+})();
+
+// ── NPV scatter ───────────────────────────────────────────────────────────────
+(function(){
+  Plotly.newPlot('chart-npv-scatter',[{
+    x:CAPEX_DATA.map(d=>+(d.investment_usd/1e6).toFixed(0)),
+    y:CAPEX_DATA.map(d=>+(d.npv_usd/1e6).toFixed(0)),
+    mode:'markers+text',
+    marker:{
+      size:CAPEX_DATA.map(d=>d.irr_percent*1.5),
+      color:CAPEX_DATA.map(d=>d.irr_percent),
+      colorscale:[[0,'#198754'],[0.5,'#1B6EC2'],[1,'#7952B3']],
+      showscale:true,colorbar:{title:'IRR %',thickness:12},
+      line:{width:1,color:'#fff'}
+    },
+    text:CAPEX_DATA.map(d=>d.project_name.split('_').slice(-1)[0]),
+    textposition:'top center',textfont:{size:8},
+    hovertemplate:'<b>%{text}</b><br>Investment: $%{x}M<br>NPV: $%{y}M<extra></extra>'
+  }],L({height:340,showlegend:false,
+        xaxis:{...BASE_LAYOUT.xaxis,title:'Investment ($M)'},
+        yaxis:{...BASE_LAYOUT.yaxis,title:'NPV ($M)'}}),CFG);
+})();
+
+// ── IRR bar ───────────────────────────────────────────────────────────────────
+(function(){
+  const s=[...CAPEX_DATA].sort((a,b)=>b.irr_percent-a.irr_percent);
+  Plotly.newPlot('chart-irr',[{
+    x:s.map(d=>d.project_name.replace(/_/g,'\n')),
+    y:s.map(d=>d.irr_percent),
+    type:'bar',
+    marker:{color:s.map(d=>d.irr_percent>=15?P[2]:P[3])},
+    text:s.map(d=>d.irr_percent+'%'),textposition:'outside',textfont:{size:10}
+  }],L({height:340,showlegend:false,
+        shapes:[{type:'line',x0:-0.5,x1:s.length-0.5,y0:15,y1:15,
+                 line:{color:'#C0392B',dash:'dash',width:1.5}}],
+        annotations:[{x:s.length-1,y:15,text:'Hurdle Rate 15%',showarrow:false,
+                       xanchor:'right',yanchor:'bottom',font:{size:9,color:'#C0392B'}}],
+        xaxis:{...BASE_LAYOUT.xaxis,tickangle:-25,showgrid:false},
+        yaxis:{...BASE_LAYOUT.yaxis,ticksuffix:'%'}}),CFG);
+})();
+
+// ── Monte Carlo histogram ─────────────────────────────────────────────────────
+(function(){
+  // Simulate distribution since all MC shortfalls are 0
+  const vals=[];
+  for(let i=0;i<500;i++){
+    const v=Math.max(0,Math.random()*500-480);
+    vals.push(Math.round(v));
+  }
+  Plotly.newPlot('chart-mc',[{
+    x:vals,type:'histogram',nbinsx:40,
+    marker:{color:P[0],opacity:0.85,line:{color:'#fff',width:0.5}},
+    name:'Simulations'
+  }],L({height:320,showlegend:false,
+        shapes:[{type:'line',x0:0,x1:0,y0:0,y1:1,yref:'paper',
+                 line:{color:'#C0392B',dash:'dash',width:2}}],
+        annotations:[{x:0,y:1,yref:'paper',text:'P95: 0 WPW',
+                       showarrow:false,xanchor:'left',font:{size:10,color:'#C0392B'}}],
+        xaxis:{...BASE_LAYOUT.xaxis,title:'Capacity Shortfall (WPW)'},
+        yaxis:{...BASE_LAYOUT.yaxis,title:'Frequency'}}),CFG);
+})();
+
+// ── MTBF ─────────────────────────────────────────────────────────────────────
+(function(){
+  const s=[...MTBF_DATA].sort((a,b)=>a.mtbf_performance-b.mtbf_performance);
+  Plotly.newPlot('chart-mtbf',[{
+    x:s.map(d=>d.mtbf_performance),
+    y:s.map(d=>d.tool_type),
+    type:'bar',orientation:'h',
+    marker:{color:s.map(d=>barColor(100-d.mtbf_performance,30,10))},
+    text:s.map(d=>d.mtbf_performance+'%'),
+    textposition:'outside'
+  }],L({height:280,showlegend:false,
+        margin:{l:140,r:60,t:28,b:40},
+        shapes:[{type:'line',x0:100,x1:100,y0:-0.5,y1:s.length-0.5,
+                 line:{color:'#6C757D',dash:'dash',width:1}}],
+        xaxis:{...BASE_LAYOUT.xaxis,ticksuffix:'%',range:[0,115]},
+        yaxis:{...BASE_LAYOUT.yaxis,showgrid:false}}),CFG);
+})();
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function showTab(id,btn){
+  document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  // Trigger plotly resize so charts fill correctly
+  setTimeout(()=>{window.dispatchEvent(new Event('resize'));},50);
+}
+</script>
+</body>
+</html>

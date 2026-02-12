@@ -1,0 +1,9 @@
+project_id,project_name,project_type,investment_usd,start_date,expected_completion,duration_months,status,progress_percent,npv_usd,irr_percent,payback_period_years,annual_benefit_usd,strategic_priority,risk_level,approved_by,business_case_roi
+CPX1000,EUV_Litho_Expansion_Phase1,Capacity Expansion,650000000,2023-03-01,2024-08-22,18,In Progress,87,55920728.57,22.31,4.48,145000000,Critical,Medium,CFO,8.6
+CPX1001,Advanced_Packaging_Line,New Capability,380000000,2023-06-01,2025-05-21,24,In Progress,52,-29473845.13,18.95,5.28,72000000,High,Medium,CFO,-7.8
+CPX1002,Cleanroom_Bay_Expansion,Infrastructure,220000000,2023-09-01,2025-04-23,20,In Progress,48,-35000084.93,17.27,5.79,38000000,High,Low,CFO,-15.9
+CPX1003,EUV_Litho_Expansion_Phase2,Capacity Expansion,850000000,2024-01-01,2025-06-24,18,In Progress,30,99341669.45,22.94,4.36,195000000,Critical,High,CFO,11.7
+CPX1004,AI_Accelerator_Dedicated_Line,New Capability,520000000,2024-06-01,2026-03-23,22,In Progress,2,54473420.49,22.69,4.41,118000000,High,Medium,CFO,10.5
+CPX1005,Automotive_Qualification_Facility,New Capability,340000000,2024-09-01,2025-12-25,16,Planning,1,88420855.96,25.88,3.86,88000000,Medium,Low,CFO,26.0
+CPX1006,Next_Gen_Metrology_Suite,Technology Upgrade,125000000,2025-01-01,2025-12-27,12,Planning,5,45394658.62,28.0,3.57,35000000,Medium,Low,CFO,36.3
+CPX1007,High_NA_EUV_Tools,Technology Upgrade,450000000,2025-06-01,2026-08-25,15,Planning,10,27105044.13,21.78,4.59,98000000,Critical,High,CFO,6.0

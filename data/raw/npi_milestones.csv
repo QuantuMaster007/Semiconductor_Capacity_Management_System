@@ -1,0 +1,25 @@
+program_name,process_node,phase,phase_start,phase_end,status,progress_percent,yield_percent,cycle_time_weeks,wafers_per_week,infrastructure_gates,gates_passed,total_gates,risk_level,investment_millions
+A17_Pro_Mobile_SoC,3nm,EVT,2023-01-15,2023-04-15,Completed,100,69.59,10.09,495,Tool_Install_Complete; Process_Qualification_Start; First_Wafer_Out,3,3,Medium,189
+A17_Pro_Mobile_SoC,3nm,DVT,2023-04-15,2023-08-13,Completed,100,81.33,14.09,1111,Process_Stability_Demo; Yield_Target_70pct; Design_Validation_Complete,3,3,Low,51
+A17_Pro_Mobile_SoC,3nm,PVT,2023-08-13,2023-11-11,Completed,100,95.18,11.41,2553,Yield_Target_85pct; Cycle_Time_Qualified; Reliability_Validation,3,3,Medium,145
+A17_Pro_Mobile_SoC,3nm,MP,2023-11-11,2024-01-10,Completed,100,93.75,12.7,5686,Full_Capacity_Qualified; Cost_Target_Met; Supply_Chain_Ready,3,3,Low,162
+M3_Ultra_HPC_Chip,3nm,EVT,2023-03-01,2023-05-30,Completed,100,72.29,15.84,424,Tool_Install_Complete; Process_Qualification_Start; First_Wafer_Out,3,3,Medium,51
+M3_Ultra_HPC_Chip,3nm,DVT,2023-05-30,2023-09-27,Completed,100,86.17,10.97,778,Process_Stability_Demo; Yield_Target_70pct; Design_Validation_Complete,3,3,Low,66
+M3_Ultra_HPC_Chip,3nm,PVT,2023-09-27,2023-12-26,Completed,100,89.63,9.74,2223,Yield_Target_85pct; Cycle_Time_Qualified; Reliability_Validation,3,3,Medium,194
+M3_Ultra_HPC_Chip,3nm,MP,2023-12-26,2024-02-24,Completed,100,98.51,10.91,6783,Full_Capacity_Qualified; Cost_Target_Met; Supply_Chain_Ready,3,3,Medium,145
+A18_Mobile_SoC,3nm,EVT,2024-01-10,2024-04-09,Completed,100,68.91,17.78,597,Tool_Install_Complete; Process_Qualification_Start; First_Wafer_Out,3,3,Low,53
+A18_Mobile_SoC,3nm,DVT,2024-04-09,2024-08-07,In Progress,55,78.38,14.11,596,Process_Stability_Demo; Yield_Target_70pct; Design_Validation_Complete,1,3,Low,139
+A18_Mobile_SoC,3nm,PVT,2024-08-07,2024-11-05,Not Started,0,0.0,10.65,3908,Yield_Target_85pct; Cycle_Time_Qualified; Reliability_Validation,0,3,Low,107
+A18_Mobile_SoC,3nm,MP,2024-11-05,2025-01-04,Not Started,0,0.0,12.7,5295,Full_Capacity_Qualified; Cost_Target_Met; Supply_Chain_Ready,0,3,High,181
+HPC_AI_Accelerator_Gen1,5nm,EVT,2023-06-01,2023-08-30,Completed,100,69.31,15.38,580,Tool_Install_Complete; Process_Qualification_Start; First_Wafer_Out,3,3,Low,158
+HPC_AI_Accelerator_Gen1,5nm,DVT,2023-08-30,2023-12-28,Completed,100,85.36,13.77,727,Process_Stability_Demo; Yield_Target_70pct; Design_Validation_Complete,3,3,Low,164
+HPC_AI_Accelerator_Gen1,5nm,PVT,2023-12-28,2024-03-27,Completed,100,89.53,12.31,2160,Yield_Target_85pct; Cycle_Time_Qualified; Reliability_Validation,3,3,Low,160
+HPC_AI_Accelerator_Gen1,5nm,MP,2024-03-27,2024-05-26,Completed,100,94.1,13.43,4366,Full_Capacity_Qualified; Cost_Target_Met; Supply_Chain_Ready,3,3,Medium,128
+Automotive_Sensor_Fusion,5nm,EVT,2023-09-01,2023-11-30,Completed,100,73.12,13.84,623,Tool_Install_Complete; Process_Qualification_Start; First_Wafer_Out,3,3,Low,79
+Automotive_Sensor_Fusion,5nm,DVT,2023-11-30,2024-03-29,Completed,100,84.46,10.46,1138,Process_Stability_Demo; Yield_Target_70pct; Design_Validation_Complete,3,3,Medium,102
+Automotive_Sensor_Fusion,5nm,PVT,2024-03-29,2024-06-27,In Progress,86,79.76,12.79,3266,Yield_Target_85pct; Cycle_Time_Qualified; Reliability_Validation,2,3,Low,137
+Automotive_Sensor_Fusion,5nm,MP,2024-06-27,2024-08-26,Not Started,0,0.0,10.22,8888,Full_Capacity_Qualified; Cost_Target_Met; Supply_Chain_Ready,0,3,High,111
+Next_Gen_GPU_Architecture,3nm,EVT,2024-03-01,2024-05-30,Completed,100,69.76,15.31,1448,Tool_Install_Complete; Process_Qualification_Start; First_Wafer_Out,3,3,Low,83
+Next_Gen_GPU_Architecture,3nm,DVT,2024-05-30,2024-09-27,In Progress,13,79.06,12.04,958,Process_Stability_Demo; Yield_Target_70pct; Design_Validation_Complete,0,3,Low,93
+Next_Gen_GPU_Architecture,3nm,PVT,2024-09-27,2024-12-26,Not Started,0,0.0,9.48,1908,Yield_Target_85pct; Cycle_Time_Qualified; Reliability_Validation,0,3,Low,189
+Next_Gen_GPU_Architecture,3nm,MP,2024-12-26,2025-02-24,Not Started,0,0.0,12.03,7167,Full_Capacity_Qualified; Cost_Target_Met; Supply_Chain_Ready,0,3,High,152
