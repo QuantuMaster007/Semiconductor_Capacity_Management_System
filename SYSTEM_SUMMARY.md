@@ -349,4 +349,3 @@ Before uploading to GitHub:
 ---
 
 *Built with attention to detail, domain expertise, and production quality.*
-*Demonstrates advanced Python, data engineering, and semiconductor knowledge.*
