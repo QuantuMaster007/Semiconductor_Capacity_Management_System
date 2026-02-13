@@ -25,7 +25,7 @@ This system provides end-to-end capacity management capabilities for semiconduct
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone <[your-repo-url](https://github.com/QuantuMaster007/Semiconductor_Capacity_Management_System.git)>
 cd semiconductor-capacity-system
 
 # Install dependencies
