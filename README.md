@@ -295,7 +295,7 @@ Edit `config.yaml` (optional) to customize:
 
 ## 🤝 Contributing
 
-This is a demonstration project for portfolio/interview purposes. If you'd like to extend it:
+This is a demonstration project for portfolio. If you'd like to extend it:
 
 1. Fork the repository
 2. Create a feature branch
